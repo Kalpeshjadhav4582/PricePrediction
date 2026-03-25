@@ -86,7 +86,7 @@ particlesJS("particles-js", {
 """, unsafe_allow_html=True)
 
 # ================= TITLE =================
-st.markdown('<div class="title">🏡 House Price Predication  </div>', unsafe_allow_html=True)
+st.markdown('<div class="title">🏡 House Price </div>', unsafe_allow_html=True)
 
 # ================= SIDEBAR =================
 st.sidebar.header("📥 Property Details")
