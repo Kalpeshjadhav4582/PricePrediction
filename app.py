@@ -201,4 +201,4 @@ Price: ₹ {round(prediction):,}
 
 # ================= FOOTER =================
 st.markdown("---")
-st.caption("🚀 House Price Predication Model ")
+st.caption("🚀 House Price Predication  ")
