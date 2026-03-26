@@ -9,25 +9,13 @@ with open('model.pkl', 'rb') as f:
 
 st.set_page_config(page_title="Gaming House Dashboard", layout="wide")
 
-# ================= PARTICLE + UI =================
+# ================= UI STYLE =================
 st.markdown("""
 <style>
-
-/* BLACK BACKGROUND */
 body {
     background: #000000;
     color: white;
 }
-
-/* PARTICLES */
-#particles-js {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-}
-
-/* TITLE */
 .title {
     font-size: 42px;
     text-align: center;
@@ -35,70 +23,41 @@ body {
     color: #00f2fe;
     text-shadow: 0 0 20px #00f2fe;
 }
-
-/* CARDS */
 .card {
     background: rgba(255,255,255,0.05);
     padding: 20px;
     border-radius: 15px;
     backdrop-filter: blur(10px);
     text-align: center;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.9);
-    transition: 0.3s;
 }
-.card:hover {
-    transform: scale(1.05);
-}
-
-/* BUTTON */
 .stButton > button {
     background-color: black;
     color: white;
     border: 1px solid #00f2fe;
     border-radius: 10px;
 }
-
 </style>
-
-<div id="particles-js"></div>
-
-<script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
-<script>
-particlesJS("particles-js", {
-  "particles": {
-    "number": {"value": 80},
-    "size": {"value": 3},
-    "color": {"value": "#00f2fe"},
-    "line_linked": {
-      "enable": true,
-      "distance": 150,
-      "color": "#00f2fe",
-      "opacity": 0.4
-    },
-    "move": {
-      "enable": true,
-      "speed": 2
-    }
-  }
-});
-</script>
-
 """, unsafe_allow_html=True)
 
 # ================= TITLE =================
-st.markdown('<div class="title">🏡 House Price Predication  </div>', unsafe_allow_html=True)
+st.markdown('<div class="title">🏡 House Price Prediction</div>', unsafe_allow_html=True)
 
 # ================= SIDEBAR =================
 st.sidebar.header("📥 Property Details")
 
-cities = ["Mumbai", "Pune", "Nashik"]
+# 🌍 City Selection (Improved)
+cities = ["Mumbai", "Pune", "Nashik", "Other"]
 location = st.sidebar.selectbox("📍 Select City", cities)
 
-area = st.sidebar.slider("Area", 500, 10000, 2000)
-bedrooms = st.sidebar.slider("Bedrooms", 1, 5, 3)
-bathrooms = st.sidebar.slider("Bathrooms", 1, 4, 2)
-stories = st.sidebar.slider("Stories", 1, 4, 2)
-parking = st.sidebar.slider("Parking", 0, 3, 1)
+if location == "Other":
+    custom_city = st.sidebar.text_input("Enter Your City")
+
+# 🔢 Manual Input with +/- buttons
+area = st.sidebar.number_input("📐 Area (sq.ft)", min_value=100, max_value=20000, value=2000, step=100)
+bedrooms = st.sidebar.number_input("🛏 Bedrooms", min_value=1, max_value=10, value=3, step=1)
+bathrooms = st.sidebar.number_input("🛁 Bathrooms", min_value=1, max_value=10, value=2, step=1)
+stories = st.sidebar.number_input("🏢 Stories", min_value=1, max_value=10, value=2, step=1)
+parking = st.sidebar.number_input("🚗 Parking", min_value=0, max_value=10, value=1, step=1)
 
 mainroad = st.sidebar.selectbox("Main Road", ['yes', 'no'])
 guestroom = st.sidebar.selectbox("Guest Room", ['yes', 'no'])
@@ -122,6 +81,7 @@ input_data = {
     'furnishingstatus_semi-furnished': int(furnishingstatus == 'semi-furnished'),
     'furnishingstatus_unfurnished': int(furnishingstatus == 'unfurnished'),
 
+    # Default encoding
     'location_Mumbai': int(location == "Mumbai"),
     'location_Pune': int(location == "Pune"),
     'location_Nashik': int(location == "Nashik")
@@ -147,7 +107,7 @@ if st.sidebar.button("🔍 Predict Price"):
 
     st.markdown("---")
 
-    # ================= UNIQUE FEATURES =================
+    # ================= TABS =================
     tab1, tab2, tab3 = st.tabs(["💡 Price Breakdown", "📊 Market Compare", "🧾 Report"])
 
     # 💡 PRICE BREAKDOWN
@@ -174,7 +134,7 @@ if st.sidebar.button("🔍 Predict Price"):
             "Nashik": 4000000
         }
 
-        market = avg_price[location]
+        market = avg_price.get(location, 5000000)
 
         st.metric("Your Price", f"₹ {round(prediction):,}")
         st.metric("Market Avg", f"₹ {market:,}")
@@ -201,4 +161,4 @@ Price: ₹ {round(prediction):,}
 
 # ================= FOOTER =================
 st.markdown("---")
-st.caption("🚀 House Price Predication Model ")
+st.caption("🚀 House Price Prediction Model")
