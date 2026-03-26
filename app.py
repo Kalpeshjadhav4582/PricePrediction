@@ -9,86 +9,84 @@ with open('model.pkl', 'rb') as f:
 
 st.set_page_config(page_title="Gaming House Dashboard", layout="wide")
 
-# ================= ADVANCED UI =================
+# ================= PARTICLE + UI =================
 st.markdown("""
 <style>
 
-/* BACKGROUND */
+/* BLACK BACKGROUND */
 body {
-    background: radial-gradient(circle at top, #0f2027, #000000);
+    background: #000000;
     color: white;
+}
+
+/* PARTICLES */
+#particles-js {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
 }
 
 /* TITLE */
 .title {
-    font-size: 50px;
+    font-size: 42px;
     text-align: center;
     font-weight: bold;
     color: #00f2fe;
-    text-shadow: 0 0 25px #00f2fe, 0 0 50px #00f2fe;
-    animation: glow 2s infinite alternate;
+    text-shadow: 0 0 20px #00f2fe;
 }
 
-@keyframes glow {
-    from { text-shadow: 0 0 10px #00f2fe; }
-    to { text-shadow: 0 0 40px #00f2fe; }
-}
-
-/* 3D CARD */
+/* CARDS */
 .card {
     background: rgba(255,255,255,0.05);
-    padding: 25px;
-    border-radius: 20px;
-    backdrop-filter: blur(15px);
+    padding: 20px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
     text-align: center;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.9);
-    transform-style: preserve-3d;
-    transition: transform 0.4s, box-shadow 0.4s;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.9);
+    transition: 0.3s;
 }
-
-/* 3D HOVER */
 .card:hover {
-    transform: rotateY(15deg) rotateX(10deg) scale(1.08);
-    box-shadow: 0 0 40px #00f2fe;
+    transform: scale(1.05);
 }
 
 /* BUTTON */
 .stButton > button {
-    background: linear-gradient(45deg, #00f2fe, #4facfe);
-    color: black;
-    border-radius: 12px;
-    font-weight: bold;
-    transition: 0.3s;
-}
-
-.stButton > button:hover {
-    transform: scale(1.1);
-}
-
-/* SIDEBAR */
-section[data-testid="stSidebar"] {
-    background: rgba(0,0,0,0.8);
-    box-shadow: 0 0 20px #00f2fe;
+    background-color: black;
+    color: white;
+    border: 1px solid #00f2fe;
+    border-radius: 10px;
 }
 
 </style>
 
-<script>
-// MOUSE PARALLAX EFFECT
-document.addEventListener("mousemove", (e) => {
-    let x = (window.innerWidth / 2 - e.pageX) / 25;
-    let y = (window.innerHeight / 2 - e.pageY) / 25;
+<div id="particles-js"></div>
 
-    document.querySelectorAll(".card").forEach(card => {
-        card.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
-    });
+<script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+<script>
+particlesJS("particles-js", {
+  "particles": {
+    "number": {"value": 80},
+    "size": {"value": 3},
+    "color": {"value": "#00f2fe"},
+    "line_linked": {
+      "enable": true,
+      "distance": 150,
+      "color": "#00f2fe",
+      "opacity": 0.4
+    },
+    "move": {
+      "enable": true,
+      "speed": 2
+    }
+  }
 });
 </script>
 
 """, unsafe_allow_html=True)
 
 # ================= TITLE =================
-st.markdown('<div class="title">🏡 3D House Price Predictor</div>', unsafe_allow_html=True)
+st.markdown('<div class="title">🏡 House Price Predication  </div>', unsafe_allow_html=True)
 
 # ================= SIDEBAR =================
 st.sidebar.header("📥 Property Details")
@@ -109,7 +107,7 @@ airconditioning = st.sidebar.selectbox("AC", ['yes', 'no'])
 prefarea = st.sidebar.selectbox("Preferred Area", ['yes', 'no'])
 furnishingstatus = st.sidebar.selectbox("Furnishing", ['furnished', 'semi-furnished', 'unfurnished'])
 
-# ================= INPUT =================
+# ================= INPUT DATA =================
 input_data = {
     'area': area,
     'bedrooms': bedrooms,
@@ -123,6 +121,7 @@ input_data = {
     'prefarea_yes': int(prefarea == 'yes'),
     'furnishingstatus_semi-furnished': int(furnishingstatus == 'semi-furnished'),
     'furnishingstatus_unfurnished': int(furnishingstatus == 'unfurnished'),
+
     'location_Mumbai': int(location == "Mumbai"),
     'location_Pune': int(location == "Pune"),
     'location_Nashik': int(location == "Nashik")
@@ -141,47 +140,17 @@ if st.sidebar.button("🔍 Predict Price"):
     # ================= KPI =================
     col1, col2, col3, col4 = st.columns(4)
 
-    col1.markdown(f"""
-    <div class="card">
-    <h3>💰 Price</h3>
-    <h2 id="price">0</h2>
-    </div>
-
-    <script>
-    let target = {round(prediction)};
-    let count = 0;
-    let speed = target / 50;
-
-    let interval = setInterval(() => {{
-        count += speed;
-        if(count >= target) {{
-            count = target;
-            clearInterval(interval);
-        }}
-        document.getElementById("price").innerText = "₹ " + Math.floor(count).toLocaleString();
-    }}, 20);
-    </script>
-    """, unsafe_allow_html=True)
-
+    col1.markdown(f'<div class="card"><h3>💰 Price</h3><h2>₹ {round(prediction):,}</h2></div>', unsafe_allow_html=True)
     col2.markdown(f'<div class="card"><h3>📐 Area</h3><h2>{area}</h2></div>', unsafe_allow_html=True)
     col3.markdown(f'<div class="card"><h3>🛏 Bedrooms</h3><h2>{bedrooms}</h2></div>', unsafe_allow_html=True)
     col4.markdown(f'<div class="card"><h3>📍 Location</h3><h2>{location}</h2></div>', unsafe_allow_html=True)
 
     st.markdown("---")
 
-    # ================= 3D MODEL =================
-    st.markdown("### 🏠 3D House View")
-
-    st.components.v1.html("""
-    <iframe src="https://my.spline.design/housemodel/"
-    frameborder="0"
-    width="100%"
-    height="500px"></iframe>
-    """, height=500)
-
-    # ================= TABS =================
+    # ================= UNIQUE FEATURES =================
     tab1, tab2, tab3 = st.tabs(["💡 Price Breakdown", "📊 Market Compare", "🧾 Report"])
 
+    # 💡 PRICE BREAKDOWN
     with tab1:
         st.subheader("💡 Feature Impact")
 
@@ -195,6 +164,7 @@ if st.sidebar.button("🔍 Predict Price"):
         df_imp = pd.DataFrame(list(impact.items()), columns=["Feature", "Impact"])
         st.bar_chart(df_imp.set_index("Feature"))
 
+    # 📊 MARKET COMPARISON
     with tab2:
         st.subheader("📊 Market Comparison")
 
@@ -214,6 +184,7 @@ if st.sidebar.button("🔍 Predict Price"):
         else:
             st.success("✅ Good Deal")
 
+    # 🧾 REPORT
     with tab3:
         st.subheader("🧾 Property Report")
 
@@ -230,4 +201,4 @@ Price: ₹ {round(prediction):,}
 
 # ================= FOOTER =================
 st.markdown("---")
-st.caption("🚀 Advanced 3D House Price Prediction Dashboard")
+st.caption("🚀 House Price Predication Model ")
